@@ -44,16 +44,16 @@ def bayes_factor(
     the parameters of the distribution following recomendations in Dienes 2014 as:
     'uniform':  A uniform distribution between H0_value and H1_value.
     'normal' : A normal distribution with mean=H1_value and SD=(H1_value-H0_value)/2
-    'half-normal' : A half-normal distribution with mode=H0 and SD = H1_value-H0_value
-     Alternatively the parameters of the hypothesis H1 can also be specified directly,
-     see paramter definitions below.  For more information about choosing the alternative
-     hypothesis see Dienes 2014 (https://doi.org/10.3389/fpsyg.2014.00781).
+    'half-normal' : A half-normal distribution with mode=H0_value and SD=H1_value-H0_value
+    Alternatively the parameters of the hypothesis H1 can also be specified directly,
+    see paramter definitions below.  For more information about choosing the alternative
+    hypothesis see Dienes 2014 (https://doi.org/10.3389/fpsyg.2014.00781).
 
-     If the plot argument is set to True the data, H1, and H0 distributions are plotted
-     for visualisation.  By default the Bayes Factor is printed along with a
-     classification of the strength of evidence using the criteria of Lee and Wagenmaker
-     2014 (https://doi.org/10.1017/CBO9781139087759), this can be suppressed by setting
-     the summary argument to False.
+    If the plot argument is set to True the data, H1, and H0 distributions are plotted
+    for visualisation.  By default the Bayes Factor is printed along with a
+    classification of the strength of evidence using the criteria of Lee and Wagenmaker
+    2014 (https://doi.org/10.1017/CBO9781139087759), this can be suppressed by setting
+    the summary argument to False.
 
     Parameters:
     data_mean : mean of the observed data.
@@ -91,8 +91,7 @@ def bayes_factor(
     # Compute data likelihood under alternative hypothesis H1
     if H1_distribution == "uniform":
         likelihood_1 = (
-            norm.cdf(uniform_max, loc=data_mean, scale=data_SE)
-            - norm.cdf(uniform_min, loc=data_mean, scale=data_SE)
+            norm.cdf(uniform_max, loc=data_mean, scale=data_SE) - norm.cdf(uniform_min, loc=data_mean, scale=data_SE)
         ) / (uniform_max - uniform_min)
     elif H1_distribution == "normal":
         x_min = min(data_mean - 5 * data_SE, normal_mode - 5 * normal_SD)
@@ -105,9 +104,7 @@ def bayes_factor(
         elif half == "lower":
             x_min = normal_mode - 5 * normal_SD
             x_max = normal_mode
-        likelihood_1 = 2 * int_normPDF_prod(
-            data_mean, data_SE, normal_mode, normal_SD, x_min, x_max
-        )
+        likelihood_1 = 2 * int_normPDF_prod(data_mean, data_SE, normal_mode, normal_SD, x_min, x_max)
     # Compute Bayes factor from likelihood ratio.
     bayes_factor = likelihood_1 / likelihood_0
     # Plotting
@@ -169,6 +166,4 @@ def int_normPDF_prod(m1, sd1, m2, sd2, x_min, x_max):
     m = (m1 * v2 + m2 * v1) / (v1 + v2)  # Mean of resulting Gaussian PDF.
     v = (v1 * v2) / (v1 + v2)  # Variance of resulting Gaussian PDF.
     c = norm.pdf(m1 - m2, scale=np.sqrt(v1 + v2))  # Constant to scale resulting PDF.
-    return c * norm.cdf(x_max, loc=m, scale=np.sqrt(v)) - c * norm.cdf(
-        x_min, loc=m, scale=np.sqrt(v)
-    )
+    return c * norm.cdf(x_max, loc=m, scale=np.sqrt(v)) - c * norm.cdf(x_min, loc=m, scale=np.sqrt(v))
